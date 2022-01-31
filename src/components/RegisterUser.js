@@ -1,7 +1,14 @@
 import React from "react";
 import axios from "axios";
 import "../mystyle.css";
-import utilities from '../util.js'
+
+const validEmailRegex = RegExp(
+  /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
+);
+
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
 
 class RegisterUser extends React.Component {
   constructor(props) {
@@ -29,6 +36,7 @@ class RegisterUser extends React.Component {
       showPopUp: false,
       response: null,
       errorFromServer: false,
+      loading: false,
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -65,14 +73,8 @@ class RegisterUser extends React.Component {
   registerUserHandler = (event) => {
     let errors = this.state.errors;
     event.preventDefault();
-    if (this.state.firstname === "") {
+    if (this.state.firstname.length < 1) {
       errors.firstname = "First Name cannot be empty";
-      this.setState({ errors, firstname: "" });
-      return;
-    }
-    if (utilities.onlyAlphabets.test(this.state.firstname)) {
-      errors.firstname =
-        "First Name cannot contain numbers or special characters";
       this.setState({ errors, firstname: "" });
       return;
     }
@@ -91,7 +93,7 @@ class RegisterUser extends React.Component {
       this.setState({ errors, email: "" });
       return;
     }
-    if (!utilities.validEmailRegex.test(this.state.email)) {
+    if (!validEmailRegex.test(this.state.email)) {
       errors.email = "Invalid Email Id";
       this.setState({ errors, email: "" });
       return;
@@ -124,8 +126,11 @@ class RegisterUser extends React.Component {
     delete user.errors;
     let response = null;
     try {
+      this.setState({loading: true});
+      await sleep(5000) //wait 5 seconds
        response = await axios.post("http://localhost:3001/user", user);
     } catch(e) {
+      this.setState({loading: false});
       this.setState({ showPopUp: true, errorFromServer: true })
       return;
     }
@@ -155,11 +160,28 @@ class RegisterUser extends React.Component {
   });
 
   render() {
-    const { errors, response, errorFromServer } = this.state;
+    const { errors, response, errorFromServer, loading } = this.state;
+    if(loading) {
+      console.log('loading is true');
+      return (<>
+        <div className="center">
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+        <div className="wave"></div>
+</div>
+      </>);
+    }
     if (errorFromServer) {
       return (
         <>
-          <div className="container">
+          <div className="error-container">
             <div className="title">
               Something Wrong with the server. Please try again later!
             </div>
