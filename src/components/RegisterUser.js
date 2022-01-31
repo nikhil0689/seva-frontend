@@ -1,6 +1,8 @@
 import React from "react";
 import axios from "axios";
 import "../mystyle.css";
+import { Spinner } from "react-bootstrap";
+
 
 const validEmailRegex = RegExp(
   /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
@@ -88,12 +90,12 @@ class RegisterUser extends React.Component {
       this.setState({ errors, phone: "" });
       return;
     }
-    if (this.state.email === "") {
+    if (this.state.email.length < 1) {
       errors.email = "Email cannot be empty";
       this.setState({ errors, email: "" });
       return;
     }
-    if (!validEmailRegex.test(this.state.email)) {
+    if (this.state.email && !validEmailRegex.test(this.state.email)) {
       errors.email = "Invalid Email Id";
       this.setState({ errors, email: "" });
       return;
@@ -119,37 +121,48 @@ class RegisterUser extends React.Component {
         phone: "",
         email: "",
       },
+      showPopUp: false,
+      response: null,
+      errorFromServer: false,
     });
   };
 
   registerUser = async (user) => {
     delete user.errors;
     let response = null;
+    this.setState({loading: true});
     try {
-      this.setState({loading: true});
-      await sleep(5000) //wait 5 seconds
        response = await axios.post("http://localhost:3001/user", user);
     } catch(e) {
-      this.setState({loading: false});
-      this.setState({ showPopUp: true, errorFromServer: true })
+      this.setState({ showPopUp: true, errorFromServer: true, loading: false })
       return;
     }
+    const {id, address, phone, email, firstname, lastname, gothra, nakshatra, subscription } = response.data;
+
+    const { street = null, unit = null, city = null, state = null, zip = null} = address;
+    const { whatsapp, weekly_email, maha_rudra} = subscription;
+
+    let whatsppResponse = whatsapp ? 'Yes' : 'No';
+    let weeklyEmailResponse = weekly_email ? 'Yes' : 'No';
+    let mahaRudraResponse = maha_rudra ? 'Yes' : 'No';
 
     response = {
-      id: '12345',
-      name: 'Fisrt name last name',
-      gothra: 'Vasishta',
-      nakshatra: 'Star',
-      street: '6102 admiralty lane',
-      unit: null,
-      city: 'Foster City',
-      state: 'CA',
-      zip: '94404',
-      whatsapp: 'Yes',
-      weekly_email: 'No',
-      maha_rudra: 'Yes',
+      id: id,
+      name: firstname +' '+ lastname,
+      phone: phone,
+      email: email,
+      gothra: gothra,
+      nakshatra: nakshatra,
+      street: street,
+      unit: unit,
+      city: city,
+      state: state,
+      zip: zip,
+      whatsapp: whatsppResponse,
+      weekly_email: weeklyEmailResponse,
+      maha_rudra: mahaRudraResponse,
     }
-    this.setState({ showPopUp: true, response: response });
+    this.setState({ showPopUp: true, response: response, loading: false });
     return;
   };
 
@@ -161,28 +174,31 @@ class RegisterUser extends React.Component {
 
   render() {
     const { errors, response, errorFromServer, loading } = this.state;
-    if(loading) {
-      console.log('loading is true');
-      return (<>
-        <div className="center">
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-        <div className="wave"></div>
-</div>
-      </>);
+    if (loading) {
+      console.log("loading is true");
+      return (
+        <>
+          <div className="center">
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+            <div className="wave"></div>
+          </div>
+        </>
+      );
     }
     if (errorFromServer) {
       return (
         <>
           <div className="error-container">
             <div className="title">
+              {loading && <Spinner>Loading...</Spinner>}
               Something Wrong with the server. Please try again later!
             </div>
             <div className="content"><br/>
@@ -202,6 +218,8 @@ class RegisterUser extends React.Component {
             <p>{response.name}</p>
             <p>Gothra: {response.gothra}</p>
             <p>Nakshatra: {response.nakshatra}</p>
+            <p>Phone: {response.phone}</p>
+            <p>Email: {response.email}</p>
             <br />
             <p>Address</p>
             <p>
