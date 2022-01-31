@@ -132,6 +132,7 @@ class RegisterUser extends React.Component {
     let response = null;
     this.setState({loading: true});
     try {
+      await sleep(2000);
        response = await axios.post("http://localhost:3001/user", user);
     } catch(e) {
       this.setState({ showPopUp: true, errorFromServer: true, loading: false })
@@ -175,7 +176,6 @@ class RegisterUser extends React.Component {
   render() {
     const { errors, response, errorFromServer, loading } = this.state;
     if (loading) {
-      console.log("loading is true");
       return (
         <>
           <div className="center">
@@ -243,7 +243,7 @@ class RegisterUser extends React.Component {
     }
     return (
       <div className="container">
-        <div className="title">Register Here</div>
+        <div className="title">Devotee Registration</div>
         <div className="content">
           <form onSubmit={this.registerUserHandler} noValidate>
             <div className="user-details">
