@@ -2,11 +2,7 @@ import React from "react";
 import axios from "axios";
 import "../mystyle.css";
 import { Spinner } from "react-bootstrap";
-
-
-const validEmailRegex = RegExp(
-  /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
-);
+import * as constants from '../util';
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -16,24 +12,24 @@ class RegisterUser extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      firstname: "",
-      lastname: "",
-      gothra: "",
-      nakshatra: "",
-      phone: "",
-      email: "",
-      street: "",
-      unit: "",
-      city: "",
-      state: "",
-      zip: "",
+      firstname: constants.EMPTY_STRING,
+      lastname: constants.EMPTY_STRING,
+      gothra: constants.EMPTY_STRING,
+      nakshatra: constants.EMPTY_STRING,
+      phone: constants.EMPTY_STRING,
+      email: constants.EMPTY_STRING,
+      street: constants.EMPTY_STRING,
+      unit: constants.EMPTY_STRING,
+      city: constants.EMPTY_STRING,
+      state: constants.EMPTY_STRING,
+      zip: constants.EMPTY_STRING,
       whatsapp: false,
       weekly_email: false,
       maha_rudra: false,
       errors: {
-        firstname: "",
-        phone: "",
-        email: "",
+        firstname: constants.EMPTY_STRING,
+        phone: constants.EMPTY_STRING,
+        email: constants.EMPTY_STRING,
       },
       showPopUp: false,
       response: null,
@@ -49,22 +45,34 @@ class RegisterUser extends React.Component {
     let value = target.type === "checkbox" ? target.checked : target.value;
     const name = target.name;
     if (
-      name === "firstname" ||
-      name === "lastname" ||
-      name === "gothra" ||
-      name === "nakshatra" ||
-      name === "city" ||
-      name === "state"
+      name === constants.FIRST_NAME ||
+      name === constants.LAST_NAME ||
+      name === constants.GOTHRA ||
+      name === constants.NAKSHATHRA ||
+      name === constants.CITY ||
+      name === constants.STATE 
     ) {
-      value = value.replace(/[^A-Za-z]/gi, "");
+      value = value.replace(/[^A-Za-z]/gi, constants.EMPTY_STRING);
     }
-    if(name === 'phone' || name === 'zip') {
-      value = value.replace(/\D/g, "");
+    if(name === constants.PHONE || name === constants.ZIP) {
+      value = value.replace(/\D/g, constants.EMPTY_STRING);
     }
-    if(name === 'phone' && value.length === 11) {
+    if(name === constants.PHONE && value.length === 11) {
       return false;
     }
-    if(name === 'zip' && value.length === 6) {
+    if(name === constants.ZIP && value.length === 6) {
+      return false;
+    }
+    if(name === constants.UNIT && value.length === 6) {
+      return false;
+    }
+    if((name === constants.FIRST_NAME || name === constants.LAST_NAME) && value.length === 20) {
+      return false;
+    }
+    if((name === constants.GOTHRA || name === constants.NAKSHATHRA) && value.length === 20) {
+      return false;
+    }
+    if((name === constants.CITY || name === constants.STATE) && value.length === 16) {
       return false;
     }
     this.setState({
@@ -76,50 +84,50 @@ class RegisterUser extends React.Component {
     let errors = this.state.errors;
     event.preventDefault();
     if (this.state.firstname.length < 1) {
-      errors.firstname = "First Name cannot be empty";
-      this.setState({ errors, firstname: "" });
+      errors.firstname = constants.FIRST_NAME_CANNOT_BE_EMPTY;
+      this.setState({ errors, firstname: constants.EMPTY_STRING });
       return;
     }
-    if (this.state.phone === "") {
-      errors.phone = "Phone cannot be empty";
-      this.setState({ errors, phone: "" });
+    if (this.state.phone === constants.EMPTY_STRING) {
+      errors.phone = constants.PHONE_CANNOT_BE_EMPTY;
+      this.setState({ errors, phone: constants.EMPTY_STRING });
       return;
     }
     if (this.state.phone.length < 10) {
-      errors.phone = "Invalid Phone No.";
-      this.setState({ errors, phone: "" });
+      errors.phone = constants.INVALID_PHONE_NO;
+      this.setState({ errors, phone: constants.EMPTY_STRING });
       return;
     }
     if (this.state.email.length < 1) {
-      errors.email = "Email cannot be empty";
-      this.setState({ errors, email: "" });
+      errors.email = constants.EMAIL_CANNOT_BE_EMPTY;
+      this.setState({ errors, email: constants.EMPTY_STRING });
       return;
     }
-    if (this.state.email && !validEmailRegex.test(this.state.email)) {
-      errors.email = "Invalid Email Id";
-      this.setState({ errors, email: "" });
+    if (this.state.email && !constants.validEmailRegex.test(this.state.email)) {
+      errors.email = constants.INVALID_EMAIL_ID;
+      this.setState({ errors, email: constants.EMPTY_STRING });
       return;
     }
     this.registerUser(this.state);
     this.setState({
-      firstname: "",
-      lastname: "",
-      gothra: "",
-      nakshatra: "",
-      phone: "",
-      email: "",
-      street: "",
-      unit: "",
-      city: "",
-      state: "",
-      zip: "",
+      firstname: constants.EMPTY_STRING,
+      lastname: constants.EMPTY_STRING,
+      gothra: constants.EMPTY_STRING,
+      nakshatra: constants.EMPTY_STRING,
+      phone: constants.EMPTY_STRING,
+      email: constants.EMPTY_STRING,
+      street: constants.EMPTY_STRING,
+      unit: constants.EMPTY_STRING,
+      city: constants.EMPTY_STRING,
+      state: constants.EMPTY_STRING,
+      zip: constants.EMPTY_STRING,
       whatsapp: false,
       weekly_email: false,
       maha_rudra: false,
       errors: {
-        firstname: "",
-        phone: "",
-        email: "",
+        firstname: constants.EMPTY_STRING,
+        phone: constants.EMPTY_STRING,
+        email: constants.EMPTY_STRING,
       },
       showPopUp: false,
       response: null,
@@ -143,9 +151,9 @@ class RegisterUser extends React.Component {
     const { street = null, unit = null, city = null, state = null, zip = null} = address;
     const { whatsapp, weekly_email, maha_rudra} = subscription;
 
-    let whatsppResponse = whatsapp ? 'Yes' : 'No';
-    let weeklyEmailResponse = weekly_email ? 'Yes' : 'No';
-    let mahaRudraResponse = maha_rudra ? 'Yes' : 'No';
+    let whatsppResponse = whatsapp ? constants.YES : constants.NO;
+    let weeklyEmailResponse = weekly_email ? constants.YES : constants.NO;
+    let mahaRudraResponse = maha_rudra ? constants.YES : constants.NO;
 
     response = {
       id: id,
