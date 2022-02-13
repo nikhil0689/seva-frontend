@@ -1,8 +1,8 @@
 import React from "react";
 import axios from "axios";
 import "../mystyle.css";
-import { Spinner } from "react-bootstrap";
 import * as constants from '../util';
+import Loader from "./Loader";
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -50,7 +50,7 @@ class RegisterUser extends React.Component {
       name === constants.GOTHRA ||
       name === constants.NAKSHATHRA ||
       name === constants.CITY ||
-      name === constants.STATE 
+      name === constants.STATE
     ) {
       value = value.replace(/[^A-Za-z]/gi, constants.EMPTY_STRING);
     }
@@ -185,20 +185,7 @@ class RegisterUser extends React.Component {
     const { errors, response, errorFromServer, loading } = this.state;
     if (loading) {
       return (
-        <>
-          <div className="center">
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-            <div className="wave"></div>
-          </div>
-        </>
+        <Loader/>
       );
     }
     if (errorFromServer) {
@@ -206,7 +193,6 @@ class RegisterUser extends React.Component {
         <>
           <div className="error-container">
             <div className="title">
-              {loading && <Spinner>Loading...</Spinner>}
               Something Wrong with the server. Please try again later!
             </div>
             <div className="content"><br/>
@@ -331,6 +317,100 @@ class RegisterUser extends React.Component {
                 {errors.email.length > 0 && (
                   <span className="error">{errors.email}</span>
                 )}
+              </div>
+
+              <div className="input-box">
+              <span className="">Family</span>
+                <span className="details">Name</span>
+                <input
+                  type="text"
+                  name="name1"
+                  placeholder="Name"
+                  value={this.state.name1}
+                  onChange={this.handleInputChange}
+                  noValidate
+                ></input>
+              </div>
+
+              <div className="input-box">
+              <br />
+                <span className="details">Relationship</span>
+                <input
+                  type="text"
+                  name="relationship1"
+                  placeholder="Relationship"
+                  value={this.state.relationship1}
+                  onChange={this.handleInputChange}
+                ></input>
+              </div>
+
+              <div className="input-box">
+                <span className="details">Gothra</span>
+                <input
+                  type="text"
+                  name="gothra1"
+                  placeholder="Gothra"
+                  value={this.state.gothra1}
+                  onChange={this.handleInputChange}
+                ></input>
+              </div>
+
+              <div className="input-box">
+                <span className="details">Nakshatra</span>
+                <input
+                  type="text"
+                  name="nakshatra1"
+                  placeholder="Nakshatra"
+                  value={this.state.nakshatra1}
+                  onChange={this.handleInputChange}
+                ></input>
+              </div>
+
+              <div className="input-box">
+              <span className="">Family</span>
+                <span className="details">Name</span>
+                <input
+                  type="text"
+                  name="name2"
+                  placeholder="Name"
+                  value={this.state.name2}
+                  onChange={this.handleInputChange}
+                  noValidate
+                ></input>
+              </div>
+
+              <div className="input-box">
+              <br />
+                <span className="details">Relationship</span>
+                <input
+                  type="text"
+                  name="relationship2"
+                  placeholder="Relationship"
+                  value={this.state.relationship2}
+                  onChange={this.handleInputChange}
+                ></input>
+              </div>
+
+              <div className="input-box">
+                <span className="details">Gothra</span>
+                <input
+                  type="text"
+                  name="gothra2"
+                  placeholder="Gothra"
+                  value={this.state.gothra2}
+                  onChange={this.handleInputChange}
+                ></input>
+              </div>
+
+              <div className="input-box">
+                <span className="details">Nakshatra</span>
+                <input
+                  type="text"
+                  name="nakshatra2"
+                  placeholder="Nakshatra"
+                  value={this.state.nakshatra2}
+                  onChange={this.handleInputChange}
+                ></input>
               </div>
 
               <div className="input-box">
